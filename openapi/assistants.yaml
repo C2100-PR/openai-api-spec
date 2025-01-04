@@ -1,0 +1,113 @@
+openapi: 3.0.0
+info:
+  title: OpenAI Assistants API
+  version: '2024-01-04'
+  description: Assistants API endpoints for OpenAI API
+
+paths:
+  /assistants:
+    post:
+      summary: Create an assistant
+      operationId: createAssistant
+      tags: [Assistants]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - model
+              properties:
+                model:
+                  type: string
+                  description: ID of the model to use
+                name:
+                  type: string
+                  description: Name of the assistant
+                instructions:
+                  type: string
+                  description: System instructions for the assistant
+                tools:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Tool'
+                file_ids:
+                  type: array
+                  items:
+                    type: string
+                  description: Files available to the assistant
+
+    get:
+      summary: List assistants
+      operationId: listAssistants
+      tags: [Assistants]
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - name: after
+          in: query
+          schema:
+            type: string
+        - name: before
+          in: query
+          schema:
+            type: string
+
+components:
+  schemas:
+    Tool:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum: [code_interpreter, retrieval, function]
+        function:
+          type: object
+          description: Function specification for function type tools
+          
+    Assistant:
+      type: object
+      required:
+        - id
+        - object
+        - created_at
+        - model
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+          enum: [assistant]
+        created_at:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        model:
+          type: string
+        instructions:
+          type: string
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tool'
+        file_ids:
+          type: array
+          items:
+            type: string
+        metadata:
+          type: object
+          additionalProperties: true
